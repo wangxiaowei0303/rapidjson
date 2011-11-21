@@ -2,21 +2,18 @@
 
 #include "rapidjson/reader.h"
 #include "rapidjson/prettywriter.h"
-#include "rapidjson/filereadstream.h"
-#include "rapidjson/filewritestream.h"
+#include "rapidjson/filestream.h"
 
 using namespace rapidjson;
 
 int main(int argc, char* argv[]) {
 	// Prepare reader and input stream.
 	Reader reader;
-	char readBuffer[65536];
-	FileReadStream is(stdin, readBuffer, sizeof(readBuffer));
+	FileStream is(stdin);
 
 	// Prepare writer and output stream.
-	char writeBuffer[65536];
-	FileWriteStream os(stdout, writeBuffer, sizeof(writeBuffer));
-	PrettyWriter<FileWriteStream> writer(os);
+	FileStream os(stdout);
+	PrettyWriter<FileStream> writer(os);
 
 	// JSON reader parse from the input stream and let writer generate the output.
 	if (!reader.Parse<0>(is, writer)) {
