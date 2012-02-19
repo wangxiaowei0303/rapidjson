@@ -705,7 +705,7 @@ public:
 		GenericReader<Encoding> reader;
 		if (reader.Parse<parseFlags>(stream, *this)) {
 			RAPIDJSON_ASSERT(stack_.GetSize() == sizeof(ValueType)); // Got one and only one root object
-			RawAssign(*stack_.template Pop<ValueType>(1));
+			this->RawAssign(*stack_.template Pop<ValueType>(1));	// Add this-> to prevent issue 13.
 			parseError_ = 0;
 			errorOffset_ = 0;
 		}
