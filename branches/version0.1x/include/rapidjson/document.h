@@ -98,11 +98,11 @@ public:
 	//! Constructor for uint64_t value.
 	GenericValue(uint64_t u64) : flags_(kNumberUint64Flag) {
 		data_.n.u64 = u64;
-		if (!(u64 & 0x8000000000000000L))
+		if (!(u64 & 0x8000000000000000ULL))
 			flags_ |= kInt64Flag;
-		if (!(u64 & 0xFFFFFFFF00000000L))
+		if (!(u64 & 0xFFFFFFFF00000000ULL))
 			flags_ |= kUintFlag;
-		if (!(u64 & 0xFFFFFFFF80000000L))
+		if (!(u64 & 0xFFFFFFFF80000000ULL))
 			flags_ |= kIntFlag;
 	}
 
@@ -613,9 +613,11 @@ private:
 		RAPIDJSON_ASSERT(name);
 		RAPIDJSON_ASSERT(IsObject());
 
+		SizeType length = internal::StrLen(name);
+
 		Object& o = data_.o;
 		for (Member* member = o.members; member != data_.o.members + data_.o.size; ++member)
-			if (name[member->name.data_.s.length] == '\0' && memcmp(member->name.data_.s.str, name, member->name.data_.s.length * sizeof(Ch)) == 0)
+			if (length == member->name.data_.s.length && memcmp(member->name.data_.s.str, name, length * sizeof(Ch)) == 0)
 				return member;
 
 		return 0;
