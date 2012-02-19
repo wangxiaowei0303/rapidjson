@@ -226,11 +226,15 @@ public:
 
 	//! Allocates a memory block. (concept Allocator)
 	void* Malloc(size_t size) {
+		size = (size + 3) & ~3;	// Force aligning size to 4
+
 		if (chunkHead_->size + size > chunkHead_->capacity)
 			AddChunk(chunk_capacity_ > size ? chunk_capacity_ : size);
 
 		char *buffer = (char *)(chunkHead_ + 1) + chunkHead_->size;
+		RAPIDJSON_ASSERT(((uintptr_t)buffer & 3) == 0);	// returned buffer is aligned to 4
 		chunkHead_->size += size;
+
 		return buffer;
 	}
 
@@ -246,8 +250,10 @@ public:
 		// Simply expand it if it is the last allocation and there is sufficient space
 		if (originalPtr == (char *)(chunkHead_ + 1) + chunkHead_->size - originalSize) {
 			size_t increment = newSize - originalSize;
+			increment = (increment + 3) & ~3;	// Force aligning size to 4
 			if (chunkHead_->size + increment <= chunkHead_->capacity) {
 				chunkHead_->size += increment;
+				RAPIDJSON_ASSERT(((uintptr_t)originalPtr & 3) == 0);	// returned buffer is aligned to 4
 				return originalPtr;
 			}
 		}
