@@ -270,18 +270,18 @@ public:
 		return *this;
 	}
 
-	GenericValue& AddMember(const char* name, Allocator& nameAllocator, GenericValue& value, Allocator& allocator) {
+	GenericValue& AddMember(const Ch* name, Allocator& nameAllocator, GenericValue& value, Allocator& allocator) {
 		GenericValue n(name, internal::StrLen(name), nameAllocator);
 		return AddMember(n, value, allocator);
 	}
 
-	GenericValue& AddMember(const char* name, GenericValue& value, Allocator& allocator) {
+	GenericValue& AddMember(const Ch* name, GenericValue& value, Allocator& allocator) {
 		GenericValue n(name, internal::StrLen(name));
 		return AddMember(n, value, allocator);
 	}
 
 	template <typename T>
-	GenericValue& AddMember(const char* name, T value, Allocator& allocator) {
+	GenericValue& AddMember(const Ch* name, T value, Allocator& allocator) {
 		GenericValue n(name, internal::StrLen(name));
 		GenericValue v(value);
 		return AddMember(n, v, allocator);
@@ -652,10 +652,10 @@ private:
 	void SetStringRaw(const Ch* s, SizeType length, Allocator& allocator) {
 		RAPIDJSON_ASSERT(s != NULL);
 		flags_ = kCopyStringFlag;
-		data_.s.str = (char *)allocator.Malloc(length + 1);
+		data_.s.str = (Ch *)allocator.Malloc(length + 1);
 		data_.s.length = length;
 		memcpy((void*)data_.s.str, s, length);
-		((char*)data_.s.str)[length] = '\0';
+		((Ch*)data_.s.str)[length] = '\0';
 	}
 
 	//! Assignment without calling destructor
