@@ -588,6 +588,6 @@ TEST(Value, RemoveLastElement) {
 	objVal.AddMember("var2", "444", allocator);
 	objVal.AddMember("var3", 555, allocator);
 	EXPECT_TRUE(objVal.HasMember("var3"));
-	objVal.RemoveMember("var3");	// Assertion here in r16
+	objVal.RemoveMember("var3");	// Assertion here in r61
 	EXPECT_FALSE(objVal.HasMember("var3"));
 }
