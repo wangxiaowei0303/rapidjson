@@ -19,7 +19,7 @@ TEST(Reader, ParseTrue) {
 	ParseBoolHandler<true> h;
 	Reader reader;
 	reader.ParseTrue<0>(s, h);
-	EXPECT_EQ(1, h.step_);
+	EXPECT_EQ(1u, h.step_);
 }
 
 TEST(Reader, ParseFalse) {
@@ -27,7 +27,7 @@ TEST(Reader, ParseFalse) {
 	ParseBoolHandler<false> h;
 	Reader reader;
 	reader.ParseFalse<0>(s, h);
-	EXPECT_EQ(1, h.step_);
+	EXPECT_EQ(1u, h.step_);
 }
 
 struct ParseIntHandler : BaseReaderHandler<> {
@@ -82,8 +82,8 @@ TEST(Reader, ParseNumberHandler) {
 		Handler h; \
 		Reader reader; \
 		reader.ParseNumber<0>(s, h); \
-		EXPECT_EQ(1, h.step_); \
-		EXPECT_EQ(x, h.actual_); \
+		EXPECT_EQ(1u, h.step_); \
+		EXPECT_EQ(double(x), h.actual_); \
 	}
 
 #define TEST_DOUBLE(str, x) \
@@ -92,7 +92,7 @@ TEST(Reader, ParseNumberHandler) {
 		ParseDoubleHandler h; \
 		Reader reader; \
 		reader.ParseNumber<0>(s, h); \
-		EXPECT_EQ(1, h.step_); \
+		EXPECT_EQ(1u, h.step_); \
 		EXPECT_DOUBLE_EQ(x, h.actual_); \
 	}
 
@@ -273,7 +273,7 @@ TEST(Reader, ParseString) {
 		Reader reader;
 		reader.ParseString<0>(s, h);
 		EXPECT_EQ(0, memcmp(e, h.str_, h.length_ + 1));
-		EXPECT_EQ(11, h.length_);
+		EXPECT_EQ(11u, h.length_);
 	}
 }
 
@@ -283,7 +283,7 @@ TEST(Reader, ParseString_NonDestructive) {
 	Reader reader;
 	reader.ParseString<0>(s, h);
 	EXPECT_EQ(0, StrCmp("Hello\nWorld", h.str_));
-	EXPECT_EQ(11, h.length_);
+	EXPECT_EQ(11u, h.length_);
 }
 
 #ifdef RAPIDJSON_USE_EXCEPTION
@@ -314,8 +314,8 @@ struct ParseArrayHandler : BaseReaderHandler<> {
 
 	void Default() { FAIL(); }
 	void Uint(unsigned i) { EXPECT_EQ(step_, i); step_++; } 
-	void StartArray() { EXPECT_EQ(0, step_); step_++; }
-	void EndArray(SizeType elementCount) { step_++; }
+	void StartArray() { EXPECT_EQ(0u, step_); step_++; }
+	void EndArray(SizeType) { step_++; }
 
 	unsigned step_;
 };
@@ -326,7 +326,7 @@ TEST(Reader, ParseEmptyArray) {
 	ParseArrayHandler<0> h;
 	Reader reader;
 	reader.ParseArray<0>(s, h);
-	EXPECT_EQ(2, h.step_);
+	EXPECT_EQ(2u, h.step_);
 	free(json);
 }
 
@@ -336,7 +336,7 @@ TEST(Reader, ParseArray) {
 	ParseArrayHandler<4> h;
 	Reader reader;
 	reader.ParseArray<0>(s, h);
-	EXPECT_EQ(6, h.step_);
+	EXPECT_EQ(6u, h.step_);
 	free(json);
 }
 
@@ -364,7 +364,7 @@ TEST(Reader, ParseArray_Error) {
 struct ParseObjectHandler : BaseReaderHandler<> {
 	ParseObjectHandler() : step_(0) {}
 
-	void Null() { EXPECT_EQ(8, step_); step_++; }
+	void Null() { EXPECT_EQ(8u, step_); step_++; }
 	void Bool(bool b) { 
 		switch(step_) {
 			case 4: EXPECT_TRUE(b); step_++; break;
@@ -382,8 +382,8 @@ struct ParseObjectHandler : BaseReaderHandler<> {
 		}
 	}
 	void Uint(unsigned i) { Int(i); }
-	void Double(double d) { EXPECT_EQ(12, step_); EXPECT_EQ(3.1416, d); step_++; }
-	void String(const char* str, size_t length, bool copy) { 
+	void Double(double d) { EXPECT_EQ(12u, step_); EXPECT_EQ(3.1416, d); step_++; }
+	void String(const char* str, size_t, bool) { 
 		switch(step_) {
 			case 1: EXPECT_STREQ("hello", str); step_++; break;
 			case 2: EXPECT_STREQ("world", str); step_++; break;
@@ -396,10 +396,10 @@ struct ParseObjectHandler : BaseReaderHandler<> {
 			default: FAIL();
 		}
 	}
-	void StartObject() { EXPECT_EQ(0, step_); step_++; }
-	void EndObject(SizeType memberCount) { EXPECT_EQ(19, step_); EXPECT_EQ(7, memberCount); step_++;}
-	void StartArray() { EXPECT_EQ(14, step_); step_++; }
-	void EndArray(SizeType elementCount) { EXPECT_EQ(18, step_); EXPECT_EQ(3, elementCount); step_++;}
+	void StartObject() { EXPECT_EQ(0u, step_); step_++; }
+	void EndObject(SizeType memberCount) { EXPECT_EQ(19u, step_); EXPECT_EQ(7u, memberCount); step_++;}
+	void StartArray() { EXPECT_EQ(14u, step_); step_++; }
+	void EndArray(SizeType elementCount) { EXPECT_EQ(18u, step_); EXPECT_EQ(3u, elementCount); step_++;}
 
 	unsigned step_;
 };
@@ -414,7 +414,7 @@ TEST(Reader, ParseObject) {
 		ParseObjectHandler h;
 		Reader reader;
 		reader.ParseObject<kParseInsituFlag>(s, h);
-		EXPECT_EQ(20, h.step_);
+		EXPECT_EQ(20u, h.step_);
 		free(json2);
 	}
 
@@ -424,7 +424,7 @@ TEST(Reader, ParseObject) {
 		ParseObjectHandler h;
 		Reader reader;
 		reader.ParseObject<0>(s, h);
-		EXPECT_EQ(20, h.step_);
+		EXPECT_EQ(20u, h.step_);
 	}
 }
 
@@ -432,8 +432,8 @@ struct ParseEmptyObjectHandler : BaseReaderHandler<> {
 	ParseEmptyObjectHandler() : step_(0) {}
 
 	void Default() { FAIL(); }
-	void StartObject() { EXPECT_EQ(0, step_); step_++; }
-	void EndObject(SizeType memberCount) { EXPECT_EQ(1, step_); step_++; }
+	void StartObject() { EXPECT_EQ(0u, step_); step_++; }
+	void EndObject(SizeType) { EXPECT_EQ(1u, step_); step_++; }
 
 	unsigned step_;
 };
@@ -443,7 +443,7 @@ TEST(Reader, Parse_EmptyObject) {
 	ParseEmptyObjectHandler h;
 	Reader reader;
 	reader.ParseObject<0>(s, h);
-	EXPECT_EQ(2, h.step_);
+	EXPECT_EQ(2u, h.step_);
 }
 
 #ifdef RAPIDJSON_USE_EXCEPTION 

@@ -7,7 +7,7 @@
 
 #if TEST_RAPIDJSON
 //#define RAPIDJSON_SSE2
-//#define RAPIDJSON_SSE42
+#define RAPIDJSON_SSE42
 #endif
 
 #if TEST_YAJL

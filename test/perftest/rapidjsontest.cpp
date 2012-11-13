@@ -42,14 +42,14 @@ protected:
 };
 
 TEST_F(RapidJson, strlen) {
-	for (int i = 0; i < kTrialCount; i++) {
+	for (size_t i = 0; i < kTrialCount; i++) {
 		size_t l = strlen(json_);
 		EXPECT_EQ(length_, l + 1);
 	}
 }
 
 TEST_F(RapidJson, SIMD_SUFFIX(ReaderParseInsitu_NullHandler)) {
-	for (int i = 0; i < kTrialCount; i++) {
+	for (size_t i = 0; i < kTrialCount; i++) {
 		memcpy(temp_, json_, length_);
 		InsituStringStream s(temp_);
 		BaseReaderHandler<> h;
@@ -62,7 +62,7 @@ TEST_F(RapidJson, SIMD_SUFFIX(DoucmentParseInsitu_MemoryPoolAllocator)) {
 	//const size_t userBufferSize = 128 * 1024;
 	//char* userBuffer = (char*)malloc(userBufferSize);
 
-	for (int i = 0; i < kTrialCount; i++) {
+	for (size_t i = 0; i < kTrialCount; i++) {
 		memcpy(temp_, json_, length_);
 		//MemoryPoolAllocator<> allocator(userBuffer, userBufferSize);
 		//Document doc(&allocator);
@@ -85,7 +85,7 @@ TEST_F(RapidJson, SIMD_SUFFIX(DoucmentParse_MemoryPoolAllocator)) {
 	//const size_t userBufferSize = 128 * 1024;
 	//char* userBuffer = (char*)malloc(userBufferSize);
 
-	for (int i = 0; i < kTrialCount; i++) {
+	for (size_t i = 0; i < kTrialCount; i++) {
 		//MemoryPoolAllocator<> allocator(userBuffer, userBufferSize);
 		//Document doc(&allocator);
 		Document doc;
@@ -104,7 +104,7 @@ TEST_F(RapidJson, SIMD_SUFFIX(DoucmentParse_MemoryPoolAllocator)) {
 }
 
 TEST_F(RapidJson, SIMD_SUFFIX(DoucmentParse_CrtAllocator)) {
-	for (int i = 0; i < kTrialCount; i++) {
+	for (size_t i = 0; i < kTrialCount; i++) {
 		memcpy(temp_, json_, length_);
 		GenericDocument<UTF8<>, CrtAllocator> doc;
 		doc.Parse<0>(temp_);
@@ -127,14 +127,18 @@ size_t Traverse(const T& value) {
 			for (typename T::ConstValueIterator itr = value.Begin(); itr != value.End(); ++itr)
 				count += Traverse(*itr);
 			break;
+
+		default:
+			// Do nothing.
+			break;
 	}
 	return count;
 }
 
 TEST_F(RapidJson, DocumentTraverse) {
-	for (int i = 0; i < kTrialCount; i++) {
+	for (size_t i = 0; i < kTrialCount; i++) {
 		size_t count = Traverse(doc_);
-		EXPECT_EQ(4339, count);
+		EXPECT_EQ(4339u, count);
 		//if (i == 0)
 		//	std::cout << count << std::endl;
 	}
@@ -150,21 +154,21 @@ struct ValueCounter : public BaseReaderHandler<> {
 };
 
 TEST_F(RapidJson, DocumentAccept) {
-	for (int i = 0; i < kTrialCount; i++) {
+	for (size_t i = 0; i < kTrialCount; i++) {
 		ValueCounter counter;
 		doc_.Accept(counter);
-		EXPECT_EQ(4339, counter.count_);
+		EXPECT_EQ(4339u, counter.count_);
 	}
 }
 
 struct NullStream {
 	NullStream() : length_(0) {}
-	void Put(char c) { ++length_; }
+	void Put(char) { ++length_; }
 	size_t length_;
 };
 
 TEST_F(RapidJson, Writer_NullStream) {
-	for (int i = 0; i < kTrialCount; i++) {
+	for (size_t i = 0; i < kTrialCount; i++) {
 		NullStream s;
 		Writer<NullStream> writer(s);
 		doc_.Accept(writer);
@@ -174,23 +178,25 @@ TEST_F(RapidJson, Writer_NullStream) {
 }
 
 TEST_F(RapidJson, Writer_StringBuffer) {
-	for (int i = 0; i < kTrialCount; i++) {
+	for (size_t i = 0; i < kTrialCount; i++) {
 		StringBuffer s(0, 1024 * 1024);
 		Writer<StringBuffer> writer(s);
 		doc_.Accept(writer);
 		const char* str = s.GetString();
+		(void)str;
 		//if (i == 0)
 		//	std::cout << strlen(str) << std::endl;
 	}
 }
 
 TEST_F(RapidJson, PrettyWriter_StringBuffer) {
-	for (int i = 0; i < kTrialCount; i++) {
+	for (size_t i = 0; i < kTrialCount; i++) {
 		StringBuffer s(0, 2048 * 1024);
 		PrettyWriter<StringBuffer> writer(s);
 		writer.SetIndent(' ', 1);
 		doc_.Accept(writer);
 		const char* str = s.GetString();
+		(void)str;
 		//if (i == 0)
 		//	std::cout << strlen(str) << std::endl;
 	}
@@ -198,34 +204,34 @@ TEST_F(RapidJson, PrettyWriter_StringBuffer) {
 
 TEST_F(RapidJson, pow) {
 	double sum = 0;
-	for (int i = 0; i < kTrialCount * kTrialCount; i++)
-		sum += pow(10.0, i & 255);
+	for (size_t i = 0; i < kTrialCount * kTrialCount; i++)
+		sum += pow(10.0, int(i & 255));
 	EXPECT_GT(sum, 0.0);
 }
 
 TEST_F(RapidJson, internal_Pow10) {
 	double sum = 0;
-	for (int i = 0; i < kTrialCount * kTrialCount; i++)
+	for (size_t i = 0; i < kTrialCount * kTrialCount; i++)
 		sum += internal::Pow10(i & 255);
 	EXPECT_GT(sum, 0.0);
 }
 
 TEST_F(RapidJson, Whitespace_strlen) {
-	for (int i = 0; i < kTrialCount; i++) {
+	for (size_t i = 0; i < kTrialCount; i++) {
 		size_t l = strlen(whitespace_);
 		EXPECT_GT(l, whitespace_length_);
 	}		
 }
 
 TEST_F(RapidJson, Whitespace_strspn) {
-	for (int i = 0; i < kTrialCount; i++) {
+	for (size_t i = 0; i < kTrialCount; i++) {
 		size_t l = strspn(whitespace_, " \n\r\t");
 		EXPECT_EQ(whitespace_length_, l);
 	}		
 }
 
 TEST_F(RapidJson, SIMD_SUFFIX(Whitespace)) {
-	for (int i = 0; i < kTrialCount; i++) {
+	for (size_t i = 0; i < kTrialCount; i++) {
 		Document doc;
 		ASSERT_TRUE(doc.Parse<0>(whitespace_).IsArray());
 	}		
