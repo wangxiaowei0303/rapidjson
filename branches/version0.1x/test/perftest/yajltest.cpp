@@ -51,7 +51,7 @@ static yajl_callbacks nullcallbacks = {
 };
 
 TEST_F(Yajl, yajl_parse_nullcallbacks) {
-	for (int i = 0; i < kTrialCount; i++) {
+	for (size_t i = 0; i < kTrialCount; i++) {
 		yajl_handle hand = yajl_alloc(&nullcallbacks, NULL, NULL);
 		yajl_status stat = yajl_parse(hand, (unsigned char*)json_, length_ - 1);
 		//ASSERT_EQ(yajl_status_ok, stat);
@@ -66,7 +66,7 @@ TEST_F(Yajl, yajl_parse_nullcallbacks) {
 }
 
 TEST_F(Yajl, yajl_tree_parse) {
-	for (int i = 0; i < kTrialCount; i++) {
+	for (size_t i = 0; i < kTrialCount; i++) {
 		yajl_val root = yajl_tree_parse(json_, NULL, 0);
 		ASSERT_TRUE(root != NULL);
 		yajl_tree_free(root);
@@ -85,7 +85,7 @@ yajl_gen_status GenVal(yajl_gen g, yajl_val v) {
 			size_t len;
 			//if (YAJL_IS_INTEGER(v)) // buggy
 			if (v->u.number.flags & YAJL_NUMBER_INT_VALID)
-				len = sprintf(num, "%d", YAJL_GET_INTEGER(v));
+				len = sprintf(num, "%lld", YAJL_GET_INTEGER(v));
 			//else if (YAJL_IS_DOUBLE(v))	// buggy
 			else if (v->u.number.flags & YAJL_NUMBER_DOUBLE_VALID)
 				len = sprintf(num, "%g", YAJL_GET_DOUBLE(v));
@@ -127,12 +127,13 @@ yajl_gen_status GenVal(yajl_gen g, yajl_val v) {
 	case yajl_t_true: return yajl_gen_bool(g, 1);
 	case yajl_t_false: return yajl_gen_bool(g, 0);
 	case yajl_t_null: return yajl_gen_null(g);
+	case yajl_t_any: break;
 	}
 	return yajl_gen_in_error_state;
 }
 
 TEST_F(Yajl, yajl_gen) {
-	for (int i = 0; i < kTrialCount; i++) {
+	for (size_t i = 0; i < kTrialCount; i++) {
 		yajl_gen g = yajl_gen_alloc(NULL);
 
 		yajl_gen_status status = GenVal(g, root_);
@@ -152,7 +153,7 @@ TEST_F(Yajl, yajl_gen) {
 }
 
 TEST_F(Yajl, yajl_gen_beautify) {
-	for (int i = 0; i < kTrialCount; i++) {
+	for (size_t i = 0; i < kTrialCount; i++) {
 		yajl_gen g = yajl_gen_alloc(NULL);
 		yajl_gen_config(g, yajl_gen_beautify, 1);
 		yajl_gen_config(g, yajl_gen_indent_string, " ");
@@ -174,7 +175,7 @@ TEST_F(Yajl, yajl_gen_beautify) {
 }
 
 TEST_F(Yajl, Whitespace) {
-	for (int i = 0; i < kTrialCount; i++) {
+	for (size_t i = 0; i < kTrialCount; i++) {
 		yajl_val root = yajl_tree_parse(whitespace_, NULL, 0);
 		ASSERT_TRUE(root != NULL);
 		yajl_tree_free(root);
