@@ -760,6 +760,9 @@ public:
 	size_t GetStackCapacity() const { return stack_.GetCapacity(); }
 
 private:
+	// Prohibit assignment
+	GenericDocument& operator=(const GenericDocument&);
+
 	friend class GenericReader<Encoding>;	// for Reader to call the following private handler functions
 
 	// Implementation of Handler
