@@ -707,7 +707,7 @@ public:
 	template <unsigned parseFlags, typename Stream>
 	GenericDocument& ParseStream(Stream& stream) {
 		ValueType::SetNull(); // Remove existing root if exist
-		GenericReader<Encoding> reader;
+		GenericReader<Encoding, Allocator> reader;
 		if (reader.template Parse<parseFlags>(stream, *this)) {
 			RAPIDJSON_ASSERT(stack_.GetSize() == sizeof(ValueType)); // Got one and only one root object
 			this->RawAssign(*stack_.template Pop<ValueType>(1));	// Add this-> to prevent issue 13.
@@ -763,7 +763,7 @@ private:
 	// Prohibit assignment
 	GenericDocument& operator=(const GenericDocument&);
 
-	friend class GenericReader<Encoding>;	// for Reader to call the following private handler functions
+	friend class GenericReader<Encoding, Allocator>;	// for Reader to call the following private handler functions
 
 	// Implementation of Handler
 	void Null()	{ new (stack_.template Push<ValueType>()) ValueType(); }
