@@ -1,8 +1,8 @@
 #ifndef RAPIDJSON_RAPIDJSON_H_
 #define RAPIDJSON_RAPIDJSON_H_
 
-// Copyright (c) 2011 Milo Yip (miloyip@gmail.com)
-// Version 0.1
+// Copyright (c) 2011-2012 Milo Yip (miloyip@gmail.com)
+// Version 0.11
 
 #include <cstdlib>	// malloc(), realloc(), free()
 #include <cstring>	// memcpy()
