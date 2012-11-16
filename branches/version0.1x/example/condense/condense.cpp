@@ -9,7 +9,7 @@
 
 using namespace rapidjson;
 
-int main(int argc, char* argv[]) {
+int main(int, char*[]) {
 	// Prepare JSON reader and input stream.
 	Reader reader;
 	FileStream is(stdin);
